@@ -15,7 +15,7 @@ class EventsController extends BaseController
     public function getWarmupEvents() {
         $event = Event::get();
         $event->each(function ($item) {
-            $item['workshops'] = Workshop::where('event_id',$item['id'])->first();
+            $item['workshops'] = Workshop::where('event_id',$item['id'])->get();
         });
         return $event;
     }
@@ -185,6 +185,15 @@ class EventsController extends BaseController
      */
 
     public function getFutureEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 2');
+        //throw new \Exception('implement in coding task 2');
+        $date = today()->format('Y-m-d');
+        $event = Event::join('workshops','workshops.event_id','=','events.id')
+        ->where('start','>=',$date)
+        ->select('events.id as id','events.name')
+        ->get();//return $event;
+        $event->each(function ($item) {
+            $item['workshops'] = Workshop::where('event_id',$item['id'])->get();
+        });
+        return $event;
     }
 }
